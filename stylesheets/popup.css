@@ -1,0 +1,31 @@
+body {
+  overflow-x:hidden;
+  margin:2px;
+  padding:0px;
+  font: 13px/1 verdana, "bitstream vera sans", sans-serif;
+  font-size: 11px;
+  color:#5A5A5A;
+}
+
+td {
+  font: 13px/1 verdana, "bitstream vera sans", sans-serif;
+  font-size: 11px;
+  color:#5A5A5A;
+}
+
+img {
+  padding:0px;
+  margin:2px;
+  border:none;
+  vertical-align:middle;
+  /*width:16px;
+  height:16px;*/
+}
+
+.serviceIcon {
+  opacity: 1.;
+}
+
+.serviceIcon:hover {
+  opacity: .8;
+}

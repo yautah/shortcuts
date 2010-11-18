@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script>
+
+function init() {
+	var version = "1.0.0";
+	
+	// set icon
+	var icon = localStorage["icon"];
+	if(icon == undefined){
+		icon = "icon.png";
+		localStorage["icon"] = icon;
+	}
+	
+	// set size
+	var size = localStorage["icon-size"];
+	if(size == undefined){
+		size = "24";
+		localStorage["icon-size"] = size;
+	}
+	chrome.browserAction.setIcon({"path":localStorage["icon"]});
+	
+	// removed services:
+	// Notebook - GNote this,
+	localStorage.setItem('completelist', "sina,kaixin,");
+	if (localStorage.userList == undefined) {
+		localStorage.setItem('userList', "kaixin,");
+	}
+	// set customcount
+	if (localStorage.customCount == undefined)
+		localStorage.setItem("customCount", "0");
+	// build wholeshebang as a difference between userlist and completelist
+	var wholeshebang = "," + localStorage.completelist;
+	var userlist = localStorage.userList || "";
+	var userListArray = new Array();
+	userListArray = userlist.split(',');
+	userListArray.pop();
+	var userListArrayLength = userListArray.length;
+	
+	wholeshebang = "," + wholeshebang;
+	for (var i = 0; i < userListArrayLength; i++) {
+		wholeshebang = wholeshebang.replace(',' + userListArray[i] + ',', ',');
+	}
+	wholeshebang = wholeshebang.substring(1);
+	// save wholeshebang
+	localStorage.setItem('wholeshebang', wholeshebang.substring(1));
+	
+	if (localStorage.showSettings == undefined) {
+		localStorage.setItem('showSettings', "true");
+	}
+	if (localStorage.labelUnder == undefined) {
+		localStorage.setItem('labelUnder', "true");
+	}
+	//if (localStorage.version != version) {
+	// open ads on new installation
+	if (localStorage.version == undefined) {
+		localStorage.setItem('version', version);
+		chrome.tabs.create({"url": "http://www.soerenrinne.de/GoogleShortcuts/update_chrome.html?version=" + version}, function(tab) {});
+		// push in the details for the services
+		updateServiceDetails();
+	// open ads on new major version update
+	} else if ((localStorage.version.length > 3) && (localStorage.version.substr(2,1) != version.substr(2,1))) {
+		localStorage.setItem('version', version);
+		chrome.tabs.create({"url": "http://www.soerenrinne.de/GoogleShortcuts/update_chrome.html?version=" + version}, function(tab) {});
+		// push in the details for the services
+		updateServiceDetails();
+	// in all other cases just renew everything, no ads
+	} else if (localStorage.version != version) {
+		localStorage.setItem('version', version);
+		// push in the details for the services
+		updateServiceDetails();
+	} else {
+		// push in the details for the services
+		updateServiceDetails();
+	}
+}
+
+function updateServiceDetails() {
+	localStorage.setItem("kaixin_url", "https://www.kaixin001.com");
+	localStorage.setItem("kaixin_tooltip", "开心001是国内最大的sns社区！");
+
+
+	localStorage.setItem("sina_url", "https://www.t.sina.com");
+	localStorage.setItem("sina_tooltip", "细浪围脖是国内最大的sns社区！");
+}
+
+</script>
+</head>
+<body onLoad="init()">
+<img id="logo" src="icon.png">
+</body>
+</html>
+

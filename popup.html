@@ -1,0 +1,597 @@
+<link type="text/css" href="stylesheets/popup.css" rel="stylesheet" />
+<script>
+  chrome.extension.onRequest.addListener(
+          function(request, sender) {
+                  console.log(sender.tab ?
+                          "from a content script:" + sender.tab.url :
+                          "from the extension");
+          if (request.action == "init") {
+                  console.log("calling showSelectedServices()");
+                  showSelectedServices();
+          }
+  });
+
+  function init() {
+          //chrome.extension.getBackgroundPage().init();
+          showSelectedServices();
+  }
+
+  function showSelectedServices() {
+          // first of all delete all services that may be there
+          if (document.getElementById('servicesContainer')) {
+        var holder = document.getElementById("servicesContainer");//the holder div
+        while(holder.hasChildNodes()){
+                  holder.removeChild(holder.lastChild);
+        }
+            var mydiv = document.getElementById('servicesContainer');
+          } else {
+                  var mydiv = document.createElement('div');
+                  mydiv.setAttribute('style','float:left; display:inline-block; text-align:center;');
+                  mydiv.setAttribute('id', 'servicesContainer');
+          }
+
+          userlist = localStorage.userList;
+          var userlistArray = new Array();
+          userlistArray = userlist.split(',');
+
+          userlistArray.pop();
+          userlistArrayLength = userlistArray.length;
+
+          var innerHTML = '<table cellpadding="0" cellspacing="0" border="0"><tr>';
+          for (var i = 0;  i < userlistArrayLength; i++) {
+                  var idStripped = userlistArray[i].replace(/\ /g, "").toLowerCase();
+                  var src = "";
+                  var tooltip = "";
+                  var label = "";
+                  var imgStyle = "";
+                  var size = localStorage["icon-size"];
+                  var moduloBreak = localStorage["iconBreak"];
+                  var modulo = "";
+                  // custom name?
+                  if (localStorage.getItem(userlistArray[i] + "_name") != undefined && localStorage.getItem(userlistArray[i] + "_name") != "")
+                          label = localStorage.getItem(userlistArray[i] + "_name");
+                  else
+                          label = userlistArray[i];
+                  // custombutton?
+                  if (idStripped.substr(0,12) == "custombutton") {
+                          idStripped = "custombutton";
+                          var customURL = escape(localStorage.getItem(userlistArray[i] + "_customURL"));
+                          src = "http://www.google.com/s2/favicons?domain_url=" + customURL;
+                          tooltip = label + "\n" + localStorage.getItem(userlistArray[i] + "_tooltip");
+                          if (size > 16) {
+                                  imgStyle = "padding:" + ((size - 16) / 2 - 1) + "; border: 1px solid #CCCCCC; border-radius: 3px; background: #F0F0F0;";
+                          }
+                  } else {
+                          src = "images/services/" + idStripped + "-" + size + ".png";//.gif";
+                          tooltip = userlistArray[i] + "\n" + localStorage.getItem(userlistArray[i] + "_tooltip");
+                  }
+
+                  var href = "";
+                  // custom url?
+                  if (localStorage.getItem(userlistArray[i] + "_customURL") != undefined && localStorage.getItem(userlistArray[i] + "_customURL") != "")
+                          href = localStorage.getItem(userlistArray[i] + "_customURL");
+                  else
+                          href = localStorage.getItem(userlistArray[i] + "_url");
+                  var onclick = 'openService(event, \'' + href + '\');';
+
+                  if (label.length > 15)
+                          label = label.substring(0,15) + "...";
+
+                  // show horizontal
+                  if (localStorage.showVertical != "true") {
+                          // no labels
+                          if (localStorage.showLabel != "true") {
+                                  innerHTML += '<td align="center" style="padding-right:2px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src="' + src + '" style="' + imgStyle + '"></span></td>';
+                                  if (moduloBreak != undefined)
+                                          modulo = moduloBreak;
+                                  else
+                                          modulo = 30;
+                                  if (i%modulo == modulo - 1)
+                                          innerHTML += '</tr><tr>';
+                          }
+                          // labels
+                          else {
+                                  // labels underneath
+                                  if (localStorage.labelUnder == "true") {
+                                          innerHTML += '<td align="center" style="padding-right:4px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + ' style="' + imgStyle + '"><br/><span style="white-space:nowrap;">' + label + '</span></span></td>';
+                                          if (moduloBreak != undefined)
+                                                  modulo = moduloBreak;
+                                          else
+                                                  modulo = 4;
+                                          if (i%modulo == modulo - 1)
+                                                  innerHTML += '</tr><tr>';
+                                  }
+                                  // labels next to
+                                  else {
+                                          innerHTML += '<td align="left" style="padding-right:4px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + ' style="' + imgStyle + '"><span style="white-space:nowrap;">' + label + '</span></span></td>';
+                                          if (moduloBreak != undefined)
+                                                  modulo = moduloBreak;
+                                          else
+                                                  modulo = 4;
+                                          if (i%modulo == modulo - 1)
+                                                  innerHTML += '</tr><tr>';
+                                  }
+                          }
+                  }
+                  // show vertical
+                  else {
+                          // no labels
+                          if (localStorage.showLabel != "true") {
+                                  innerHTML += '<td align="center""><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + ' style="' + imgStyle + '"></span></td></tr><tr>';
+                          }
+                          // labels
+                          else {
+                                  // labels underneath
+                                  if (localStorage.labelUnder == "true") {
+                                          innerHTML += '<td align="center" style="padding-bottom:7px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + ' style="' + imgStyle + '"><br/><span style="white-space:nowrap;">' + label + '</span></span></td></tr><tr>';
+                                  }
+                                  // labels next to
+                                  else {
+                                          innerHTML += '<td align="left"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + ' style="' + imgStyle + '"><span style="white-space:nowrap;">' + label + '</span></span></td></tr><tr>';
+                                  }
+                          }
+                  }
+
+          }
+          // show settings
+          if (localStorage.showSettings == "true") {
+                  //var src = "images/settings.gif";
+                  var src = "images/options/settings-" + size + ".png";
+                  var onclick = 'openService(event, \'settings - not changeable\');';
+                  var tooltip = 'Google Shortcuts Options';
+                  var label = 'Options';
+                  // show horizontal
+                  if (localStorage.showVertical != "true") {
+                          // no labels
+                          if (localStorage.showLabel != "true") {
+                                  innerHTML += '<td align="center" style="padding-right:2px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '></span></td>';
+                                  if (i%30 == 29)
+                                          innerHTML += '</tr><tr>';
+                          }
+                          // labels
+                          else {
+                                  // labels underneath
+                                  if (localStorage.labelUnder == "true") {
+                                          innerHTML += '<td align="center" style="padding-right:4px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '><br/><span style="white-space:nowrap;">' + label + '</span></span></td>';
+                                          if (i%4 == 3)
+                                                  innerHTML += '</tr><tr>';
+                                  }
+                                  // labels next to
+                                  else {
+                                          innerHTML += '<td align="center" style="padding-right:4px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '><span style="white-space:nowrap;">' + label + '</span></span></td>';
+                                          if (i%4 == 3)
+                                                  innerHTML += '</tr><tr>';
+                                  }
+                          }
+                  }
+                  // show vertical
+                  else {
+                          // no labels
+                          if (localStorage.showLabel != "true") {
+                                  innerHTML += '<td align="center""><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '></span></td></tr><tr>';
+                          }
+                          // labels
+                          else {
+                                  // labels underneath
+                                  if (localStorage.labelUnder == "true") {
+                                          innerHTML += '<td align="center" style="padding-bottom:7px;"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '><br/><span style="white-space:nowrap;">' + label + '</span></span></td></tr><tr>';
+                                  }
+                                  // labels next to
+                                  else {
+                                          innerHTML += '<td align="left"><span style="cursor:hand;" onmouseup="' + onclick + '" title="' + tooltip + '" class="serviceIcon"><img src=' + src + '><span style="white-space:nowrap;">' + label + '</span></span></td></tr><tr>';
+                                  }
+                          }
+                  }
+          }
+
+          innerHTML += "</tr></table>";
+          mydiv.innerHTML = innerHTML;
+          document.body.appendChild(mydiv);
+
+          // adjust width when a scrollbar is shown
+          var elem = document.body;
+
+          var minWidth = parseInt(elem.scrollWidth) + 15;
+          if (elem.scrollHeight > 600) {
+                  document.body.setAttribute('style', 'min-width:' + minWidth + 'px');
+                  console.log("width adjusted");
+          }
+  }
+
+  function openService(event, myUrl) {
+          console.log("mouse button: " + event.button); // 0: left click, 1: middle click
+          console.log("control key pressed: " + event.ctrlKey); // true,false
+          console.log("myUrl: "  + myUrl);
+
+          // check Apps settings
+          if (myUrl == "http://www.google.com/apps" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://www.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "https://mail.google.com" && localStorage.getItem("appsGmail") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://mail.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "https://mail.google.com/mail/?ui=1&view=cm&fs=1&tf=1" && localStorage.getItem("appsGmail") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://mail.google.com/a/" + localStorage.getItem("appsDomainName") + "/?ui=1&view=cm&fs=1&tf=1";
+          }
+          else if (myUrl == "http://www.google.com/calendar/render" && localStorage.getItem("appsCalendar") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://www.google.com/calendar/hosted/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "http://www.google.com/calendar/event?ctext=&action=TEMPLATE&pprop=HowCreated:QUICKADD" && localStorage.getItem("appsCalendar") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://www.google.com/calendar/a/" + localStorage.getItem("appsDomainName") + "/event?ctext=&action=TEMPLATE&pprop=HowCreated:QUICKADD";
+          }
+          else if (myUrl == "http://docs.google.com" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://docs.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "http://docs.google.com/document/create" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://docs.google.com/a/" + localStorage.getItem("appsDomainName") + "/document/create";
+          }
+          else if (myUrl == "http://docs.google.com/?action=new_presentation" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://docs.google.com/a/" + localStorage.getItem("appsDomainName") + "/?action=new_presentation";
+          }
+          else if (myUrl == "http://spreadsheets.google.com/ccc?new=true" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://spreadsheets.google.com/a/" + localStorage.getItem("appsDomainName") + "/ccc?new=true";
+          }
+          else if (myUrl == "http://spreadsheets.google.com/newform" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://spreadsheets.google.com/a/" + localStorage.getItem("appsDomainName") + "/newform";
+          }
+          else if (myUrl == "http://docs.google.com/drawings/create" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://docs.google.com/a/" + localStorage.getItem("appsDomainName") + "/drawings/create";
+          }
+          else if (myUrl == "http://docs.google.com/templates" && localStorage.getItem("appsDocs") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "http://docs.google.com/a/" + localStorage.getItem("appsDomainName") + "/templates";
+          }
+          else if (myUrl == "http://www.google.com/contacts" && localStorage.getItem("appsContacts") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://www.google.com/contacts/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "http://sites.google.com/site/sites/" && localStorage.getItem("appsSites") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://sites.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "http://groups.google.com" && localStorage.getItem("appsGroups") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://groups.google.com/a/" + localStorage.getItem("appsDomainName") + "/";
+          }
+          else if (myUrl == "http://video.google.com" && localStorage.getItem("appsVideo") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://video.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          else if (myUrl == "https://mail.google.com/tasks/canvas?pli=1" && localStorage.getItem("appsTasks") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://mail.google.com/tasks/a/" + localStorage.getItem("appsDomainName") + "/canvas?pli=1";
+          }
+          else if (myUrl == "https://wave.google.com" && localStorage.getItem("appsWave") == "true" && localStorage.getItem("appsDomainName") != "") {
+                  myUrl = "https://wave.google.com/a/" + localStorage.getItem("appsDomainName");
+          }
+          // check if button is settings button
+          if (myUrl == "settings - not changeable") {
+                  myUrl = "options.html";
+                  //console.log("changed myUrl: "  + myUrl);
+          }
+          // check goo.gl
+          else if (myUrl == "goo.gl - not changeable") {
+                  try {
+                          make_short_url();
+                  } catch (e) {
+                          alert("Error onGoo.gl:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check gmail this
+          else if (myUrl == "gmail this - not changeable") {
+                  try {
+                          gmail_this();
+                  } catch (e) {
+                          alert("Error onGmailThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onGmailThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check greader this
+          else if (myUrl == "greader this - not changeable") {
+                  try {
+                          greader_this();
+                  } catch (e) {
+                          alert("Error onGReaderThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onGReaderThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check bookmark this
+          else if (myUrl == "bookmark this - not changeable") {
+                  try {
+                          bookmark_this();
+                  } catch (e) {
+                          alert("Error onBookmarkThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onBookmarkThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check bookmark this lists
+          else if (myUrl == "bookmark this lists - not changeable") {
+                  try {
+                          bookmark_this_lists();
+                  } catch (e) {
+                          alert("Error onBookmarkThisLists:\n" + e.name + ", " + e.message);
+                          console.error("Error onBookmarkThisLists:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }/*
+          // check gnotebook this
+          else if (myUrl == "gnotebook this - not changeable") {
+                  try {
+                          gnotebook_this();
+                  } catch (e) {
+                          alert("Error onGNotebookThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }*/
+          // check gbuzz this
+          else if (myUrl == "gbuzz this - not changeable") {
+                  try {
+                          gbuzz_this();
+                  } catch (e) {
+                          alert("Error onGBuzzThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onGBuzzThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check coop this
+          else if (myUrl == "coop this - not changeable") {
+                  try {
+                          coop_this();
+                  } catch (e) {
+                          alert("Error onCoopThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onCoopThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+          // check map this
+          else if (myUrl == "map this - not changeable") {
+                  try {
+                          map_this();
+                  } catch (e) {
+                          alert("Error onMapThis:\n" + e.name + ", " + e.message);
+                          console.error("Error onMaopThis:\n" + e.name + ", " + e.message);
+                  }
+                  return;
+          }
+
+          if (event.ctrlKey && event.button == 0 || event.button == 1 || localStorage.alwaysTab == "true") {
+                  if (localStorage.noFocusTab == "true")
+                          chrome.tabs.create({"url": myUrl, "selected": false}, function(tab) {});
+                  else
+                          chrome.tabs.create({"url": myUrl}, function(tab) {});
+          } else {
+                  chrome.tabs.getSelected(null, function (tab){
+                          chrome.tabs.update(tab.id, {url: myUrl});
+                          });
+                  setTimeout(function() {
+                          window.close();
+                  }, 250);
+          }
+  }
+
+  function gmail_this() {
+          var currentUrl;
+          var currentTitle;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          currentTitle = tab.title;
+                          // inject script into current site to get selection
+                          chrome.tabs.executeScript(tab.id, {code:'chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {if (request.method == "getSelection") sendResponse({data: window.getSelection().toString()}); else sendResponse({});});'});
+                          // send request to injected script
+                          chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function(response){ 
+                                  var selection = response.data;
+                                  if (selection != "")
+                                          selection += '\n\n';
+                                  var extension = 'mail';
+                                  if (localStorage.getItem("appsGmail") == "true" && localStorage.getItem("appsDomainName") != "")
+                                          extension = 'a/' + localStorage.getItem("appsDomainName");
+                                  myUrl='https://mail.google.com/' + extension + '/?ui=2&view=cm&fs=1&tf=1&su=' + escape(currentTitle) + '&body=' + escape(selection) + escape(currentUrl) + escape('\n\n--\nShared via Google Shortcuts Chrome extension') +'&zx=RANDOMCRAP&shva=1&disablechatbrowsercheck=1&ui=1';
+                                  console.log("myUrl: " + myUrl);
+                                  chrome.tabs.create({"url": myUrl}, function(tab) {});
+                          });
+                  });
+  }
+
+  function greader_this() {
+          var currentUrl;
+          var currentTitle;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          currentTitle = tab.title;
+                          myUrl='http://www.google.com/reader/link?url=' + escape(currentUrl) + '&title=' + escape(currentTitle);
+                          console.log("myUrl: " + myUrl);
+                          chrome.tabs.create({"url": myUrl}, function(tab) {});
+                  });
+  }
+
+  function bookmark_this() {
+          var currentUrl;
+          var currentTitle;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          currentTitle = tab.title;
+                          myUrl='http://www.google.com/bookmarks/mark?op=add&bkmk=' + escape(currentUrl) + '&title=' + escape(currentTitle);
+                          console.log("myUrl: " + myUrl);
+                          chrome.tabs.create({"url": myUrl}, function(tab) {});
+                  });
+  }
+
+  function bookmark_this_lists() {
+          var currentUrl;
+          var currentTitle;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          currentTitle = tab.title;
+                          // inject script into current site to get meta description
+                          chrome.tabs.executeScript(tab.id, {code:'chrome.extension.onRequest.addListener(function(request, sender, sendResponse) { if (request.method == "getMeta") { var mes = document.getElementsByTagName("meta"); for (var i = 0; i < mes.length; i++) { me = mes[i]; mea = me.getAttribute("name"); if (mea && mea.toUpperCase() == "DESCRIPTION") sendResponse({data: me.getAttribute("content")}); } } else sendResponse({});});'});
+                          // send request to injected script
+                          chrome.tabs.sendRequest(tab.id, {method: "getMeta"}, function(response){
+                                  var des = response.data;
+                                  console.log("des: " + des);
+                                  myUrl='https://www.google.com/bookmarks/api/bookmarklet?srcUrl=' +  escape(currentUrl) + '&snippet=' + escape(des) + '&title=' + escape(currentTitle);
+                                  console.log("myUrl: " + myUrl);
+                                  chrome.tabs.create({"url": myUrl}, function(tab) {});
+                          });
+                  });
+  }
+
+  function gbuzz_this() {
+          var currentUrl;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          // inject script into current site to get selection
+                          chrome.tabs.executeScript(tab.id, {code:'chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {if (request.method == "getSelection") sendResponse({data: window.getSelection().toString()}); else sendResponse({});});'});
+                          // send request to injected script
+                          chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function(response){
+                                  var selection = response.data;
+                                  myUrl='http://www.google.com/buzz/post?message=' + escape(selection) + '&url=' + escape(currentUrl);
+                                  console.log("myUrl: " + myUrl);
+                                  chrome.tabs.create({"url": myUrl}, function(tab) {});
+                          });
+                  });
+  }
+
+  function map_this() {
+          var currentUrl;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          // inject script into current site to get selection
+                          chrome.tabs.executeScript(tab.id, {code:'chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {if (request.method == "getSelection") sendResponse({data: window.getSelection().toString()}); else sendResponse({});});'});
+                          // send request to injected script
+                          chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function(response){
+                                  var selection = response.data;
+                                  selection = selection.replace(/\n|\r\n|\r/g,", ");
+                                  if(!selection)
+                                          selection = prompt("Nothing selected. Please enter the address:", "");
+                                  if (selection != null) {
+                                          myUrl="http://maps.google.com?q=" + escape(selection).replace(/%20/g,"+");
+                                          console.log("myUrl: " + myUrl);
+                                          chrome.tabs.create({"url": myUrl}, function(tab) {});
+                                  }
+                          });
+                  });
+  }
+
+  function coop_this() {
+          var currentUrl;
+          chrome.tabs.getSelected(null,
+                  function(tab) {
+                          currentUrl = tab.url;
+                          myUrl='http://www.google.com/coop/bml?url=' + escape(currentUrl);
+                          console.log("myUrl: " + myUrl);
+                          chrome.tabs.create({"url": myUrl}, function(tab) {});
+                  });
+  }
+
+  function make_short_url() {
+          chrome.tabs.getSelected(null, 
+                  function(tab) {
+                          var http = new XMLHttpRequest(),
+                          taburl = tab.url,
+                          par = shorten(taburl);
+
+                          http.open(
+                                  "post",
+                                  "http://goo.gl/api/url",
+                                  false
+                          );
+                          http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+                          document.getElementById("shortened-url").innerHTML = '<center><img src="images/new_images/goo.gl-16.png"/>&nbsp;<input type="text" id="short" value="loading..." onclick="var tmp=this.value;this.select();" style="margin-bottom:10px;"/></center>';
+
+                          http.onload = function() {
+                                  var shorturl = JSON.parse(http.responseText).short_url;
+                                  if (shorturl != undefined) {
+                                          // show on infobar
+                                          //localStorage.short_url = shorturl;
+                                          //chrome.experimental.infobars.show({"tabId": tab.id, "path": "infobar.html"});
+
+                                          // show short url in popup
+                                          document.getElementById("short").value = shorturl;
+                      document.getElementById("short").onclick();
+                                  } else {
+                                          document.getElementById("short").value = 'Oops. Error.';
+                                  }
+                          };
+
+                          http.send(par);
+                  }
+          );
+  }
+
+  var shorten = function (b) {
+          function c() {
+                  for (var l = 0, m = 0; m < arguments.length; m++) l = l + arguments[m] & 4294967295;
+                  return l
+          }
+          function d(l) {
+                  l = l = String(l > 0 ? l : l + 4294967296);
+                  var m;
+                  m = l;
+                  for (var o = 0, n = false, p = m.length - 1; p >= 0; --p) {
+                          var q = Number(m.charAt(p));
+                          if (n) {
+                                  q *= 2;
+                                  o += Math.floor(q / 10) + q % 10
+                          } else o += q;
+                          n = !n
+                  }
+                  m = m = o % 10;
+                  o = 0;
+                  if (m != 0) {
+                          o = 10 - m;
+                          if (l.length % 2 == 1) {
+                                  if (o % 2 == 1) o += 9;
+                                  o /= 2
+                          }
+                  }
+                  m = String(o);
+                  m += l;
+                  return l = m
+          }
+          function e(l) {
+                  for (var m = 5381, o = 0; o < l.length; o++) m = c(m << 5, m, l.charCodeAt(o));
+                  return m
+          }
+          function f(l) {
+                  for (var m = 0, o = 0; o < l.length; o++) m = c(l.charCodeAt(o), m << 6, m << 16, -m);
+                  return m
+          }
+          var g = "au";
+          g += "th";
+          g += "_";
+          g += "to";
+          g += "k";
+          g += "en";
+          var i = e(b);
+          i = i >> 2 & 1073741823;
+          i = i >> 4 & 67108800 | i & 63;
+          i = i >> 4 & 4193280 | i & 1023;
+          i = i >> 4 & 245760 | i & 16383;
+          var j = "7";
+          h = f(b);
+          var k = (i >> 2 & 15) << 4 | h & 15;
+          k |= (i >> 6 & 15) << 12 | (h >> 8 & 15) << 8;
+          k |= (i >> 10 & 15) << 20 | (h >> 16 & 15) << 16;
+          k |= (i >> 14 & 15) << 28 | (h >> 24 & 15) << 24;
+          j += d(k);
+          i = "user=";
+          i += "toolbar@google.com";
+          i += "&url=";
+          i += encodeURIComponent(b);
+          i += "&";
+          i += g;
+          i += "=";
+          i += j;
+          return i
+  };
+</script>
+
+<body onLoad=init() onclick=showSelectedServices()>
+  <span id="shortened-url" style="white-space:nowrap;"></span>
+</body>
+

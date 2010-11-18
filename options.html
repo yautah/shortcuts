@@ -1,0 +1,810 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Google Shortcuts - Options</title>
+<link type="text/css" href="stylesheets/options.css" rel="stylesheet" />
+</head>
+<body>
+<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr valign="top"><td width="77">
+<img src="icon_67.png" width="67" />
+</td><td>
+<div class="blue-bar">
+	<table width="100%"><tr>
+		<td>Google Shortcuts v<script>document.write(localStorage.version);</script> - Options</td>
+		<td>
+            <button onClick="reset()" class="btn">Reset to default</button>
+            <button onClick="init()" class="btn">Cancel</button>
+            <button id="save-button-top" style="font-weight:bold" onClick="save()" class="btn" title="Close options window">Save</button>
+		</td>
+	</tr></table>
+</div>
+<div style="text-align:right; font-size:11px; padding:3px;">Do you like the extension? Please <a href="https://chrome.google.com/extensions/detail/baohinapilmkigilbbbcccncoljkdpnd" target="_blank">rate</a> it with 5 stars <img src="images/options/rate_star.png"> on the <a href="https://chrome.google.com/extensions/detail/baohinapilmkigilbbbcccncoljkdpnd" target="_blank">extension website</a>. Thank you :)</div>
+</td></tr></table>
+<br><br>
+<!--<div id="header"><h1>Google Shortcuts v<script>document.write(localStorage.version);</script> - Options</h1></div><br />-->
+
+<div class="blue-container" id="servicesSelectionBlue">
+<div class="grey-container" id="servicesSelectionGrey">
+
+<img src="images/options/servicesSettingsButton.png" align="left"><h3>&nbsp;Select Services</h3>
+<span style="font-size:110%">Tip: Hover over the name of one of the <span id="services-number"></span>services to get a description. Left click on the name and/or icon moves from one list to the other.</span><br /><br />
+<input type="search" id="servicesFilter" onKeyUp="renewLists();" onClick="renewLists();" style="margin-bottom:7px; width:200px;" placeholder="Search Services" results="0" autofocus ></input>&nbsp;&nbsp;<label><input type="checkbox" name="filter-tooltip" id="filter-tooltip" onClick="renewLists();">Search also in description of a service</label><br />
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td valign="middle" height="25" class="top">&nbsp;Available services:</td>
+        <td rowspan="2" bgcolor="">
+        <img src="images/options/addCustom.png" class="serviceModifierButton" onClick="addCustomButton();" title="Add a user defined service"/>
+        <!--<img src="images/options/addSeparator.png" class="serviceModifierButton" />-->
+        <img src="images/options/sort_asc.png" class="serviceModifierButton" onClick="sortUserList();" title="Sort list of your chosen services alphabetically" />
+        </td>
+        <td height="25" valign="middle" class="top">&nbsp;Your chosen services: (blue <span style="color:#52A0DE">color</span> indicates a modifed service or a custom button)</td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%" class="bottom">
+        <div id="linkeSpalte" style="height:300px; overflow:auto;">
+        </div>
+        </td>
+        <td valign="top" width="50%" class="bottom">
+        <div id="rechteSpalte" style="height:300px; overflow:auto;">
+        </div>
+        </td>
+    </tr>
+    <tr>
+    	<td colspan="2">&nbsp;</td>
+        <td id="td-modifyService">
+            <div id="modifyService" style="visibility:collapse;height:0;padding:5px;">
+           	  <p><img id="img-modifyService" src="images/custombutton.gif" align="absmiddle" />&nbsp;<span id="span-modifyService">Custom button</span>:</p>
+              <p>Leave fields empty to use the default values.</p>
+                <table cellpadding="0" cellspacing="0"><tr>
+                <td>
+                	Custom name:&nbsp;
+                </td>
+                <td>
+                	<!--<input type="text" id="custom-name" placeholder="service name" size="40" onClick="if (this.value == '') this.value = this.placeholder;" onBlur="if (this.value == this.placeholder) this.value = '';">-->
+                  <input type="text" id="custom-name" placeholder="service name" size="40">
+               	  </td>
+                </tr><tr>
+                <td>
+                	Custom URL:
+                </td>
+                <td><!--<input type="text" id="custom-url" placeholder="mydomain.com" size="40" onClick="if (this.value == '') this.value = this.placeholder;" onBlur="if (this.value == this.placeholder && this.value != 'http://www.google.com') this.value = '';">--><input type="text" id="custom-url" placeholder="mydomain.com" size="40">&nbsp;Don't forget the leading 'http://'!</td>
+                </tr></table><br/>
+                <button onClick="saveModifiedService()" style="width:88px; height:22px;">Save service</button><button onClick="cancelModifiedService()" style="width:56px; height:22px;">Cancel</button>
+            
+        </td>
+    </tr>
+</table>
+<div align="center" style="background-image:url(images/options/grey_bar.png); margin-top:2px;">
+	<img src="images/options/arrow_down.png" onClick="plusTen();" style="cursor:pointer;" />
+    <img src="images/options/arrow_up.png" onClick="minusTen();" style="cursor:pointer;" />
+</div>
+<!--
+<table width="100%"><tr valign="top">
+<td id="servicesSelectionCol1" width="33%">
+<div id="dummy1" style="visibility:hidden" ></div>
+</td>
+<td id="servicesSelectionCol2" width="33%">
+<div id="dummy2" style="visibility:hidden" ></div>
+</td>
+<td id="servicesSelectionCol3" width="34%">
+<div id="dummy3" style="visibility:hidden" ></div>
+</td>
+</tr></table>
+-->
+<br/>
+<button onClick="selectAllServices()">Select all services</button>
+<button onClick="deselectAllServices()">Deselect all services</button>
+</div>
+</div>
+
+<br/>
+
+<div class="blue-container">
+<div class="grey-container">
+<img src="images/options/displaySettingsButton.png" align="left"><h3>&nbsp;General Appearance and Behaviour</h3>
+<p>
+  <label><input type="checkbox" id="show-settings" onClick="markDirty()"> Show a link to this options page at the end of the services popup list, using the following icon: <img src="images/options/settings-16.png" ></label><br/><br/>
+  Show services in popup ...<br/>
+  &nbsp;&nbsp;&nbsp;<label><input type="radio" name="orientation" id="show-horizontal" onClick="markDirty()" checked="checked"> ... horizontal</label><br/>
+  &nbsp;&nbsp;&nbsp;<label><input type="radio" name="orientation" id="show-vertical" onClick="markDirty()"> ... vertical</label><br/><br/>
+  <label><input type="checkbox" id="show-label" onClick="markDirty()"> Show labels ...</label><br/>
+  &nbsp;&nbsp;&nbsp;<label><input type="radio" name="label-position" id="label-under" onClick="markDirty()" checked="checked"> ... under the service buttons</label><br/>
+  &nbsp;&nbsp;&nbsp;<label><input type="radio" name="label-position" id="label-next" onClick="markDirty()"> ... next to the service buttons</label><br/><br/>
+  <label><input type="checkbox" id="always-tab" onClick="markDirty()"> Always open in a new tab</label><br/>
+  <label><input type="checkbox" id="no-focus-tab" onClick="markDirty()"> Do not focus a newly created tab</label>
+</p>
+<p>
+  <label>Put icons in a new row every <input name="icon-break" type="text" id="icon-break" oninput="markDirty()" size="2" maxlength="2"> icons. (For horizontal alignment only. Leave blank for the default behaviour, optimized for 16x16px icons).</label>
+</p>
+
+</div>
+</div>
+
+<br />
+
+<div class="blue-container">
+<div class="grey-container">
+<img src="images/options/modDisplaySettingsButton.png" align="left"><h3>&nbsp;Customize the icons</h3>
+<p>&nbsp;Choose your toolbar icon:<br/><br/>&nbsp;&nbsp;
+    <img class="color" style="cursor:pointer;" src="icon.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_newblue.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_newblue_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_blue_trans.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_blue_smallG_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_blue_bigG_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_red_bigG_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_color_rounded.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_turbomilk.png" />
+    <img class="color" style="cursor:pointer;" src="images/toolbar_icons/icon_old.png" />
+  </p>
+<script>
+var colors = document.getElementsByClassName("color");
+for(var i=0,ii=colors.length;i<ii;i++){
+	colors[i].addEventListener("click", changeColor);
+}
+
+function changeColor(e){
+	localStorage["icon"] = e.target.src;
+	chrome.browserAction.setIcon({"path":localStorage["icon"]});
+}
+</script>
+<p>&nbsp;Choose your preferred icon size inside the popup:<br/><br/>&nbsp;&nbsp;
+    <!--<button class="icon-size" id="16">16</button>
+    <button class="icon-size" id="24">24</button>
+    <button class="icon-size" id="32">32</button>
+    <button class="icon-size" id="42">42</button>
+    <button class="icon-size" id="48">48</button>
+    <button class="icon-size" id="64">64</button>-->
+    
+    <img class="icon-size" id="16" src="images/options/size-16.png" />
+    <img class="icon-size" id="24" src="images/options/size-24.png" />
+    <img class="icon-size" id="32" src="images/options/size-32.png" />
+    <img class="icon-size" id="42" src="images/options/size-42.png" />
+    <img class="icon-size" id="48" src="images/options/size-48.png" />
+    <img class="icon-size" id="64" src="images/options/size-64.png" />
+    
+</p>
+<script>
+
+var sizes = document.getElementsByClassName("icon-size");
+for(var i=0,ii=sizes.length;i<ii;i++){
+	sizes[i].addEventListener("click", changeSize);
+}
+
+function changeSize(e){
+	localStorage["icon-size"] = e.target.id;
+	save();
+	window.location.reload();
+}
+</script>
+
+</div>
+</div>
+
+
+<div id="footer">
+  <button id="save-button" style="font-weight:bold" onClick="save()">Save</button>
+  <button onClick="init()">Cancel</button>&nbsp;&nbsp;
+  <button onClick="reset()">Reset to default</button>
+  <img src="images/options/grey_bar.png" onClick="devMode()" align="right" width="5" height="16"/>
+  <br/><br/>
+</div>
+
+<span id="devSpan"></span>
+
+<p align="right">I would like to thank <a href="http://www.google.com/profiles/118017345135937765349" target="_blank">Carlos Jeurissen</a> for being a huge help in collecting and creating new icons in different sizes. Thank you, Carlos!</p>
+
+<script>
+var filterTooltip;
+var showVertical;
+var showSettings;
+var showLabel;
+var labelUnder;
+var labelNext;
+var alwaysTab;
+var noFocusTab;
+var saveButton;
+var saveButtonTop;
+var iconBreak;
+
+var wholeshebang;
+var completelist;
+var userlist;
+var completeListArray = new Array();
+var completeListArrayLength;
+var wholeshebangArray = new Array();
+var wholeshebangArrayLength;
+var userListArray = new Array();
+var userListArrayLength;
+
+init();
+
+function init() {
+	completelist = localStorage.completelist || "";
+	wholeshebang = localStorage.wholeshebang || "";
+	userlist = localStorage.userList || "";
+	
+	completeListArray = completelist.split(',');
+	completeListArray.pop();
+	completeListArray.sort(function(x,y){ 
+		var a = String(x).toUpperCase(); 
+		var b = String(y).toUpperCase(); 
+		if (a > b) 
+			return 1 
+		if (a < b) 
+			return -1 
+		return 0; 
+	});
+	completeListArrayLength = completeListArray.length;
+	
+	document.getElementById("services-number").innerHTML = completeListArrayLength + " ";
+	document.getElementById("servicesFilter").value = "";
+		
+	filterTooltip = document.getElementById("filter-tooltip");
+	showSettings = document.getElementById("show-settings");
+	showLabel = document.getElementById("show-label");
+	labelUnder = document.getElementById("label-under");
+	labelNext = document.getElementById("label-next");
+	showVertical = document.getElementById("show-vertical");
+	alwaysTab = document.getElementById("always-tab");
+	noFocusTab = document.getElementById("no-focus-tab");
+	saveButton = document.getElementById("save-button");
+	saveButtonTop = document.getElementById("save-button-top");
+	iconBreak = document.getElementById("icon-break");
+
+	(localStorage.alwaysTab == "true") ? alwaysTab.checked = true : alwaysTab.checked = false;
+	(localStorage.noFocusTab == "true") ? noFocusTab.checked = true : noFocusTab.checked = false;
+	(localStorage.showSettings == "true") ? showSettings.checked = true : showSettings.checked = false;
+	(localStorage.showVertical == "true") ? showVertical.checked = true : showVertical.checked = false;
+	if (localStorage.showLabel == "true") {
+		showLabel.checked = true;
+		labelUnder.disabled = false;
+		labelNext.disabled = false;
+	} else {
+		showLabel.checked = false;
+		labelUnder.disabled = true;
+		labelNext.disabled = true;
+	}
+	(localStorage.labelUnder == "true") ? labelUnder.setAttribute('checked','checked') : labelNext.setAttribute('checked','checked');
+	if (localStorage.getItem("iconBreak") != undefined)
+		iconBreak.value = localStorage.getItem("iconBreak");
+	
+	renewLists();
+	
+	markClean();
+	
+	// show which size has been selected
+	var currentSize = localStorage["icon-size"];
+		
+	switch (currentSize) {
+	  case "16":
+		document.getElementById("16").setAttribute("class", "icon-size-selected");
+		break;
+	  case "24":
+		document.getElementById("24").setAttribute("class", "icon-size-selected");
+		break;
+	  case "32":
+		document.getElementById("32").setAttribute("class", "icon-size-selected");
+		break;
+	  case "42":
+		document.getElementById("42").setAttribute("class", "icon-size-selected");
+		break;
+	  case "48":
+		document.getElementById("48").setAttribute("class", "icon-size-selected");
+		break;
+	  case "64":
+		document.getElementById("64").setAttribute("class", "icon-size-selected");
+		break;
+	  default:
+		document.getElementById("16").setAttribute("class", "icon-size-selected");
+		break;
+	}
+}
+
+function renewLists() {
+	wholeshebangArray = wholeshebang.split(',');
+	wholeshebangArray.pop();
+	wholeshebangArray.sort(function(x,y){ 
+		var a = String(x).toUpperCase(); 
+		var b = String(y).toUpperCase(); 
+		if (a > b) 
+			return 1 
+		if (a < b) 
+			return -1 
+		return 0; 
+	});
+	wholeshebangArrayLength = wholeshebangArray.length;
+	
+	userListArray = userlist.split(',');
+	userListArray.pop();
+	userListArrayLength = userListArray.length;
+	
+	// first of all remove all services, if there are any
+	var holder = document.getElementById("linkeSpalte");
+	while(holder.hasChildNodes()){
+		holder.removeChild(holder.lastChild);
+	}
+	holder = document.getElementById("rechteSpalte");
+	while(holder.hasChildNodes()){
+		holder.removeChild(holder.lastChild);
+	}
+	// create dummies
+	document.getElementById("linkeSpalte").innerHTML = '<div id="dummySpanLinks" style="visibility:hidden;height:0;width:0;">kleiner test-dummy</div>';
+	document.getElementById("rechteSpalte").innerHTML = '<div id="dummySpanRechts" style="visibility:hidden;height:0;width:0;">kleiner test-dummy</div>';
+	
+	// active filter?
+	var filter = document.getElementById("servicesFilter").value;
+	filter = filter.toLowerCase().replace(/\*/g, "").replace(/\+/g, "");	
+	
+	// create left list
+	var counter = 0;
+	for (var i = 0; i < wholeshebangArrayLength; i++) {
+		if (filter) {
+			var regex = new RegExp(filter);
+			var result1 = regex.test(wholeshebangArray[i].toLowerCase());
+			if (filterTooltip.checked)
+				var result2 = regex.test(localStorage.getItem(wholeshebangArray[i] + '_tooltip').toLowerCase());
+			else
+				var result2 = false;
+		} else {
+			var result1 = true;
+		}
+			
+		var idStripped = wholeshebangArray[i].replace(/\ /g, "").toLowerCase();
+		
+		// new table
+		var myOuterSpan = document.createElement('div');
+		var myInnerSpan = document.createElement('span');
+		var myInvisibleTitle = document.createElement('span');
+		var myMoveButtonUp = document.createElement('image');
+		var myMoveButtonDown = document.createElement('image');
+		myMoveButtonDown.setAttribute('style','cursor:pointer');
+		myMoveButtonDown.setAttribute('onclick','moveVertical(this.parentNode, 1)');
+		myMoveButtonDown.setAttribute('class','verticalMoveButton');
+		myMoveButtonDown.setAttribute('align','top');
+		myMoveButtonDown.setAttribute('src','images/options/arrow_down.png');
+		myMoveButtonDown.setAttribute('title','Move service one down');
+		myMoveButtonUp.setAttribute('style','cursor:pointer');
+		myMoveButtonUp.setAttribute('onclick','moveVertical(this.parentNode, -1)');
+		myMoveButtonUp.setAttribute('class','verticalMoveButton');
+		myMoveButtonUp.setAttribute('align','absmiddle');
+		myMoveButtonUp.setAttribute('src','images/options/arrow_up.png');
+		myMoveButtonUp.setAttribute('title','Move service one up');
+		myInnerSpan.setAttribute('style','cursor:pointer');
+		myInnerSpan.setAttribute('onclick','moveHorizontal(this.parentNode)');
+		myInnerSpan.setAttribute('title', wholeshebangArray[i] + '\n' + localStorage.getItem(wholeshebangArray[i] + '_tooltip'));
+		var size = localStorage["icon-size"];
+		myInnerSpan.innerHTML = ' <img src="images/services/' + idStripped + '-' + size + '.png" align="absmiddle">&nbsp;' + wholeshebangArray[i];
+		myOuterSpan.setAttribute('id',idStripped);if (result1 || result2) {
+			myOuterSpan.setAttribute('class',counter%2 == 1 ? 'one' : 'zero');
+			myOuterSpan.setAttribute('style','margin:2px;');
+			counter++;
+		} else {
+			myOuterSpan.setAttribute('class','hiddenService');
+		}
+		//myOuterSpan.setAttribute('class',i%2 == 1 ? 'one' : 'zero');
+		myInvisibleTitle.setAttribute('title',wholeshebangArray[i]);
+		myInvisibleTitle.setAttribute('style','visibility:hidden;width:0;');
+					
+		myOuterSpan.appendChild(myMoveButtonUp);
+		myOuterSpan.appendChild(myMoveButtonDown);
+		myOuterSpan.appendChild(myInnerSpan);
+		myOuterSpan.appendChild(myInvisibleTitle);
+		
+		document.getElementById('linkeSpalte').insertBefore(myOuterSpan, document.getElementById("dummySpanLinks"));
+	}
+	// create right list
+	for (var i = 0; i < userListArrayLength; i++) {
+		var idStripped = userListArray[i].replace(/\ /g, "").toLowerCase();
+		if (idStripped.substr(0,12) == "custombutton")
+			idStripped = "custombutton";
+		
+		// new table
+		var myOuterSpan = document.createElement('div');
+		var myInnerSpan = document.createElement('span');
+		var myInvisibleTitle = document.createElement('span');
+		var myMoveButtonUp = document.createElement('image');
+		var myMoveButtonDown = document.createElement('image');
+		var myMoveButtonFullUp = document.createElement('image');
+		var myMoveButtonFullDown = document.createElement('image');
+		
+		myMoveButtonDown.setAttribute('style','cursor:pointer');
+		myMoveButtonDown.setAttribute('onclick','moveVertical(this.parentNode, 1)');
+		myMoveButtonDown.setAttribute('class','verticalMoveButton');
+		myMoveButtonDown.setAttribute('align','absmiddle');
+		myMoveButtonDown.setAttribute('src','images/options/arrow_down.png');
+		myMoveButtonDown.setAttribute('title','Move service one down');
+		
+		myMoveButtonUp.setAttribute('style','cursor:pointer');
+		myMoveButtonUp.setAttribute('onclick','moveVertical(this.parentNode, -1)');
+		myMoveButtonUp.setAttribute('class','verticalMoveButton');
+		myMoveButtonUp.setAttribute('align','absmiddle');
+		myMoveButtonUp.setAttribute('src','images/options/arrow_up.png');
+		myMoveButtonUp.setAttribute('title','Move service one up');
+		
+		myMoveButtonFullUp.setAttribute('style','cursor:pointer');
+		myMoveButtonFullUp.setAttribute('onclick','moveVertical(this.parentNode, -11)');
+		myMoveButtonFullUp.setAttribute('class','verticalMoveButton');
+		myMoveButtonFullUp.setAttribute('align','absmiddle');
+		myMoveButtonFullUp.setAttribute('src','images/options/arrow_full_up.png');
+		myMoveButtonFullUp.setAttribute('title','Move service to the top');
+		
+		myMoveButtonFullDown.setAttribute('style','cursor:pointer');
+		myMoveButtonFullDown.setAttribute('onclick','moveVertical(this.parentNode, 11)');
+		myMoveButtonFullDown.setAttribute('class','verticalMoveButton');
+		myMoveButtonFullDown.setAttribute('align','absmiddle');
+		myMoveButtonFullDown.setAttribute('src','images/options/arrow_full_down.png');
+		myMoveButtonFullDown.setAttribute('title','Move service to the bottom');
+		
+		
+		var label = "";
+		if (localStorage.getItem(userListArray[i] + "_name") != undefined && localStorage.getItem(userListArray[i] + "_name") != "")
+			label = '<span style="color:#52A0DE;">' + localStorage.getItem(userListArray[i] + "_name") + '</span>';
+		else if (localStorage.getItem(userListArray[i] + "_customURL") != undefined && localStorage.getItem(userListArray[i] + "_customURL") != "")
+			label = '<span style="color:#52A0DE;">' + userListArray[i] + '</span>';
+		else
+			label = userListArray[i];
+		
+		myInnerSpan.setAttribute('style','cursor:pointer');
+		myInnerSpan.setAttribute('onclick','moveHorizontal(this.parentNode)');
+		myInnerSpan.setAttribute('title', userListArray[i] + '\n' + localStorage.getItem(userListArray[i] + '_tooltip'));
+		var imgStyle = "";
+		if (idStripped.substr(0,12) == "custombutton") {
+			idStripped = "custombutton";
+			var imageSrc = "http://www.google.com/s2/favicons?domain_url=" + escape(localStorage.getItem(userListArray[i] + "_customURL"));
+			if (size > 16) {
+				imgStyle = "padding:" + ((size - 16) / 2 - 1) + "; border: 1px solid #CCCCCC; border-radius: 3px; background: #F0F0F0;";
+			}
+			myInnerSpan.innerHTML = ' <img id="img-' + userListArray[i] + '" src="' + imageSrc + '" align="absmiddle" style="' + imgStyle + '">&nbsp;' + label;
+		} else {
+			var size = localStorage["icon-size"];
+			myInnerSpan.innerHTML = ' <img id="img-' + userListArray[i] + '" src="images/services/' + idStripped + '-' + size + '.png" align="absmiddle">&nbsp;' + label;
+		}
+		myOuterSpan.setAttribute('id',idStripped);
+		myOuterSpan.setAttribute('style','margin:2px;');
+		myOuterSpan.setAttribute('class',i%2 == 1 ? 'one' : 'zero');
+		myInvisibleTitle.setAttribute('title',userListArray[i]);
+		myInvisibleTitle.setAttribute('style','visibility:hidden;width:0;');
+					
+		myOuterSpan.appendChild(myMoveButtonUp);
+		myOuterSpan.appendChild(myMoveButtonDown);
+		myOuterSpan.appendChild(myMoveButtonFullUp);
+		myOuterSpan.appendChild(myMoveButtonFullDown);
+		
+		myOuterSpan.appendChild(myInnerSpan);
+		myOuterSpan.appendChild(myInvisibleTitle);
+		
+		document.getElementById('rechteSpalte').insertBefore(myOuterSpan, document.getElementById("dummySpanRechts"));
+	}
+}
+
+function editService(title) {
+	document.getElementById("modifyService").style.visibility = "visible";
+	document.getElementById("modifyService").style.height = "";
+	document.getElementById("td-modifyService").setAttribute("class", "bottom");
+	if (document.getElementById("img-" + title))
+		var src = document.getElementById("img-" + title).src;
+	else
+		var src = "images/custombutton.gif";
+	
+	document.getElementById("img-modifyService").src = src;	
+	document.getElementById("custom-name").placeholder = title;
+	document.getElementById("span-modifyService").innerHTML = title;
+	
+	if (localStorage.getItem(title + '_name') == undefined || localStorage.getItem(title + '_name') == "") {	
+		document.getElementById("custom-name").value = "";
+	}
+	else {
+		document.getElementById("custom-name").value = localStorage.getItem(title + '_name');
+	}
+	
+	if (localStorage.getItem(title + '_url') == undefined)
+		document.getElementById("custom-url").placeholder = "http://www.google.com";
+	else
+		document.getElementById("custom-url").placeholder = localStorage.getItem(title + '_url');
+	
+	if (localStorage.getItem(title + '_customURL') == undefined || localStorage.getItem(title + '_customURL') == "")		
+		document.getElementById("custom-url").value = "";
+	else
+		document.getElementById("custom-url").value = localStorage.getItem(title + '_customURL');
+	
+	console.log("url in storage: " + localStorage.getItem(title + '_customURL'));
+}
+
+function saveModifiedService() {
+	save();
+	
+	var url = document.getElementById("custom-url").value;
+	var name = document.getElementById("custom-name").value;
+	var title = document.getElementById("span-modifyService").innerHTML;
+	var placeholder_url = document.getElementById("custom-url").placeholder;
+	var placeholder_name = document.getElementById("custom-name").placeholder;
+	
+	// check if modified
+	if (url != placeholder_url && url != "") {
+		if (validURL(url))
+			localStorage.setItem(title + '_customURL', url);
+		else
+			return;
+		console.log("url in storage: " + localStorage.getItem(title + '_customURL'));
+	} else if (url == placeholder_url && url == "http://www.google.com")
+		localStorage.setItem(title + '_customURL', url);
+	
+	if (name != placeholder_name)
+		localStorage.setItem(title + '_name', name);
+	// check if empty or same as original
+	if (name == "" || name == placeholder_name)
+		localStorage.removeItem(title + '_name');
+	if (url == "" || (url == placeholder_url && url != "http://www.google.com"))
+		localStorage.removeItem(title + '_customURL');
+	
+	// check if it's a new custom button
+	if ((placeholder_name.substr(0,13) == "Custom Button") && (userlist.search(placeholder_name) == -1)) {
+		if (validURL(url))
+			localStorage.setItem(title + '_customURL', url);
+		else
+			return;
+		localStorage.userList += placeholder_name + ",";
+		userlist = localStorage.userList;
+		localStorage.setItem(title + '_tooltip', "This is a custom Button");
+		localStorage.customCount = parseInt(localStorage.customCount) + 1;
+	}
+	
+	document.getElementById("modifyService").style.visibility = "hidden";
+	document.getElementById("modifyService").style.height = "0";
+	document.getElementById("td-modifyService").removeAttribute("class");
+	
+	renewLists();
+}
+
+function cancelModifiedService () {
+	document.getElementById("modifyService").style.visibility = "hidden";
+	document.getElementById("modifyService").style.height = "0";
+	document.getElementById("td-modifyService").removeAttribute("class");
+}
+
+function validURL(str) {
+	var j = new RegExp();
+	j.compile("^(https?|ftp)+://[A-Za-z0-9-_]+\\.[A-Za-z0-9-+_%&\?\/\|.,=]+$");	
+	
+	var k = new RegExp();
+	k.compile("^(chrome://)+[A-Za-z0-9-_]+");
+	
+	if (!j.test(str))
+	{	
+		if (!k.test(str)) {
+			alert("This seems to be neither a valid URL nor a valid Chrome page.\nPlease check again your input.");
+			return false;
+		} else {
+			console.log("valid Chrome page: " + str);
+			return true;
+		}
+	} else {
+		console.log("valid URL: " + str);
+		return true;
+	}
+}
+
+function addCustomButton() {
+	var customCount = localStorage.customCount;
+	customCount++;
+	
+	editService("Custom Button " + customCount);
+}
+
+function updateLists() {
+	// save lists temporarily
+	userlist = "";
+	wholeshebang = "";
+	
+	try {
+		var holder = document.getElementById("linkeSpalte");
+		var sibling = holder.firstChild;
+		console.log(sibling.nodeType);
+		while (sibling) {
+			if (sibling.id != "dummySpanLinks")
+				wholeshebang += sibling.lastChild.title + ",";
+			sibling = sibling.nextSibling;
+		}
+		
+		holder = document.getElementById("rechteSpalte");
+		sibling = holder.firstChild;
+		while (sibling) {
+			if (sibling.id != "dummySpanRechts")
+				userlist += sibling.lastChild.title + ",";
+			sibling = sibling.nextSibling;
+		}
+	} catch (e) {
+		console.error("Error in updateLists:\n" + e.name + ", " + e.message);
+	}
+	
+	console.log("wholeshebang: " + wholeshebang);	
+	console.log("userlist: " + userlist);
+}
+
+function sortUserList() {
+	userListArray = userlist.split(',');
+	userListArray.pop();
+	userListArray.sort(function(x,y){ 
+		var a = String(x).toUpperCase(); 
+		var b = String(y).toUpperCase(); 
+		if (a > b) 
+			return 1 
+		if (a < b) 
+			return -1 
+		return 0; 
+	});
+	
+	userlist = "";
+	
+	for (var i = 0; i < userListArrayLength; i++) {
+		userlist += userListArray[i] + ",";
+	}
+	
+	renewLists();
+	markDirty();
+}
+
+function save() {
+	localStorage.noFocusTab = noFocusTab.checked;
+	localStorage.alwaysTab = alwaysTab.checked;
+	localStorage.showVertical = showVertical.checked;
+	localStorage.showSettings = showSettings.checked;
+	localStorage.showLabel = showLabel.checked;
+	localStorage.labelUnder = labelUnder.checked;
+	if (iconBreak.value != "") {
+		localStorage.setItem("iconBreak", iconBreak.value);
+	} else {
+		localStorage.removeItem("iconBreak");
+	}
+	localStorage.setItem('userList', userlist);
+	localStorage.setItem('wholeshebang', wholeshebang);
+	console.log("userList in storage: " + localStorage.getItem('userList'));
+	markClean();
+	
+	// call init from popup.html
+	chrome.extension.sendRequest({action: "init"});
+}
+
+function moveHorizontal(myItem) {
+	if (myItem.parentNode.id == "linkeSpalte") {
+		document.getElementById("rechteSpalte").insertBefore(myItem, document.getElementById("dummySpanRechts"));
+		markDirty();
+	} else {
+		if(myItem.lastChild.title.substr(0,13) == "Custom Button") {
+			localStorage.removeItem(myItem.lastChild.title + "_name");
+			localStorage.removeItem(myItem.lastChild.title + "_url");
+			document.getElementById(myItem.parentNode.id).removeChild(myItem);
+			localStorage.userList = localStorage.userList.replace(myItem.lastChild.title + ",", "");
+		}
+		else {
+			document.getElementById("linkeSpalte").insertBefore(myItem, document.getElementById("dummySpanLinks"));
+			markDirty();
+		}
+	}
+	updateLists();
+	renewLists();
+}
+
+function moveVertical(myItem, direction) {
+	if (direction == -1) { // move up
+		var sibling = myItem.previousSibling;
+		// avoid whitespaces as nodes
+		while (sibling && sibling.nodeType != 1) {
+			sibling = sibling.previousSibling;
+		}
+		if (sibling != null) {
+			sibling.parentNode.insertBefore(myItem, sibling);
+			updateLists();
+			renewLists();
+		}
+	} else if (direction == 1) { // move down
+		var sibling = myItem.nextSibling;
+		// avoid whitespaces as nodes
+		while (sibling && sibling.nodeType != 1) {
+			sibling = sibling.nextSibling;
+		}
+		if (sibling != null && sibling.id != "dummySpanLinks" && sibling.id != "dummySpanRechts") {
+			sibling.parentNode.insertBefore(sibling, myItem);
+			updateLists();
+			renewLists();
+		}
+	} else if (direction == -11) { // move complete up
+		myItem.parentNode.insertBefore(myItem, myItem.parentNode.firstChild);
+		updateLists();
+		renewLists();
+	} else if (direction == 11) { // move complete down
+		myItem.parentNode.insertBefore(myItem, myItem.parentNode.lastChild);
+		updateLists();
+		renewLists();
+	}
+	markDirty();
+}
+
+function reset() {
+	alwaysTab.checked = false;
+	noFocusTab.checked = false;
+	showSettings.checked = true;
+	showLabel.checked = false;
+	filterTooltip.checked = false;
+	
+	showVertical.checked = false;
+	iconBreak.value = "";
+	localStorage.removeItem("iconBreak");
+	localStorage["icon-size"] = 16;
+	
+	localStorage.setItem('userList', "kaixin,");
+	localStorage.setItem('wholeshebang', "sina,");
+	localStorage.setItem('appsDomainName', "");
+	
+	init();
+}
+
+function selectAllServices() {
+	userlist += wholeshebang;
+	wholeshebang = "";
+	renewLists();
+	sortUserList();
+	
+	markDirty();
+}
+
+function deselectAllServices() {
+	wholeshebang += userlist;
+	userlist = "";
+	renewLists();
+	
+	markDirty();
+}
+
+function markDirty() {
+	saveButton.disabled = false;
+	saveButtonTop.disabled = false;
+	saveButtonTop.setAttribute("class","btn-dirty");
+  
+  	if (showLabel.checked) {
+		labelUnder.disabled = false;
+		labelNext.disabled = false;
+	} else {
+		showLabel.checked = false;
+		labelUnder.disabled = true;
+		labelNext.disabled = true;
+	}
+}
+
+function markClean() {
+	saveButton.disabled = true;
+	saveButtonTop.disabled = true;
+	saveButtonTop.setAttribute("class","btn");
+}
+
+function devMode() {
+	document.getElementById("devSpan").innerHTML = "userlist: " + localStorage.userList + "<br>wholeshebang: " + localStorage.wholeshebang + "<br>completelist: " + localStorage.completelist;
+}
+
+function plusTen() {
+	var oldHeight = parseInt(document.getElementById('linkeSpalte').style.height);
+	oldHeight += parseInt(50);
+	document.getElementById('linkeSpalte').setAttribute('style', 'height:' + oldHeight + 'px; overflow:auto;');
+	document.getElementById('rechteSpalte').setAttribute('style', 'height:' + oldHeight + 'px; overflow:auto;');
+}
+
+function minusTen() {
+	var oldHeight = parseInt(document.getElementById('linkeSpalte').style.height);
+	oldHeight -= parseInt(50);
+	document.getElementById('linkeSpalte').setAttribute('style', 'height:' + oldHeight + 'px; overflow:auto;');
+	document.getElementById('rechteSpalte').setAttribute('style', 'height:' + oldHeight + 'px; overflow:auto;');
+}
+
+function checkFilterRemoveIcon() {
+	if (document.getElementById('servicesFilter').value != "") {
+		document.getElementById('remove-filter').style.visibility = "visible";
+	} else {
+		document.getElementById('remove-filter').style.visibility = "hidden";
+	}
+}
+</script>
+</body>
+</html>
+
