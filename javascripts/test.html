@@ -1,0 +1,55 @@
+<html>
+  <head>
+
+<script type="text/javascript" src="chrome_ex_oauthsimple.js"></script>
+<script type="text/javascript" src="chrome_ex_oauth.js"></script>
+    <script type="text/javascript">
+      
+chrome.contextMenus.create({
+	'type':'normal',
+	'title':'发送到新浪微博',
+	'onclick':send,
+	'contexts':['all']
+},null);
+
+      var oauth=ChromeExOAuth.initBackgroundPage({
+              'request_url': "http://api.t.sina.com.cn/oauth/request_token",
+              'authorize_url': "http://api.t.sina.com.cn/oauth/authorize",
+              'access_url': "http://api.t.sina.com.cn/oauth/access_token",
+              'consumer_key':"38950085",
+              'consumer_secret': "4c6e31814287063de180f0fb5ca139b6",
+              'scope':'',
+              'app_name': "一键微博"
+      });	
+
+      function send(data,tab){
+         if(!oauth.hasToken()){
+            oauth.authorize(function(){
+              send_status('haha');
+            });
+         }
+      }
+
+      function send_status(status) {
+	  var url = 'http://api.t.sina.com.cn/statuses/update.json';
+	  var encode_status=encodeURIComponent(status);
+	  var request = {
+	    'method': 'post',
+	    'parameters':{
+			'status':encode_status
+		    }
+	  };
+
+	  // Send: GET https://docs.google.com/feeds/default/private/full?alt=json
+	  oauth.sendSignedRequest(url, onsend, request);
+	};
+	
+	
+	
+</script>
+</head>
+<body>
+  <a href="#" onclick="send(1,1)">abc</a>
+</body>
+</html>
+
