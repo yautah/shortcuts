@@ -3,87 +3,87 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script type="text/javascript" src="chrome_ex_oauthsimple.js"></script>
 <script type="text/javascript" src="chrome_ex_oauth.js"></script>
+<script type="text/javascript" src="services/serviceList.js"></script>
+<script type="text/javascript" src="services/sina.js"></script>
+
+
 <script>
+  
+  var oneKey = {};
 
-chrome.contextMenus.create({
-        'type':'normal',
-        'title':'come on baby',
-        'onclick':send,
-        'contexts':['all']
-},null);
-
-
-
-var oauth=ChromeExOAuth.initBackgroundPage({
-        'request_url': "http://api.t.sina.com.cn/oauth/request_token",
-        'authorize_url': "http://api.t.sina.com.cn/oauth/authorize",
-        'access_url': "http://api.t.sina.com.cn/oauth/access_token",
-        'callback_url': 'http://www.g.cn',
-        'consumer_key':"2123410449",
-        'consumer_secret': "397646f2c7d19fa44e7b517143987948",
-        'scope':'',
-        'app_name': "微博天下"
-});	
-
-
-function send_status(status) {
-  var url = 'http://api.t.sina.com.cn/statuses/update.json';
-  var encode_status=encodeURIComponent(status);
-  var request = {
-    'method': 'post',
-    'parameters':{
-                'status':encode_status
-            }
+  //基本信息与设置
+  oneKey.info = {
+    icon: {
+      name: 'icon.png',
+      size: '24'
+    },
+    services: ['sina','kaixin'],
+    defaultServices: ['sina'],
+    version: {
+      major: 1,
+      minor: 0,
+      revision: 0,
+      toString: function() {
+        return this.major + '.' + this.minor + '.' + this.revision;
+      }
+    }
   };
 
-  oauth.sendSignedRequest(url, onsend, request);
-}
-
-function onsend(resp,xhr){
-    alert('signed success');
-}
-
-function send(data,tab){
-  var type = data.mediaType;
-  var pageUrl = data.pageUrl;
-  var srcUrl = data.srcUrl;
-  var text = data.selectionText;
-
-  var title = tab.title || '';
-  var pUrl  = tab.url || '';
-
-  <!--alert(type);-->
-  <!--alert(pageUrl);-->
-  <!--alert(srcUrl);-->
-  <!--alert(text);-->
-  <!--alert(title);-->
-  <!--alert(pUrl);-->
-
-  if(!oauth.hasToken()){
-    oauth.authorize(function(){
-      send_status(text);
-    });
-  }else{
-    alert('oauthed!')
+  //本地存储读取
+  oneKey.storage_get = function(options) {
+    var json = localStorage.getItem(options.key);
+    if (json == null)
+      return options.default_value;
+    try {
+      return JSON.parse(json);
+    } catch (e) {
+      log("Couldn't parse json for " + options.key);
+      return options.default_value;
+    }
   }
 
+  //设置本地存储值
+  oneKey.storage_set = function(options) {
+    localStorage.setItem(options.key, JSON.stringify(options.value));
+  };
 
-}
+  // Inputs: key:string.
+  //删除本地存储
+  oneKey.storage_remove = function(options) {
+    localStorage.removeItem(options.key);
+  };
+
+  //设置右键菜单
+  oneKey.setContextMenu = function(options){
+    chrome.contextMenus.create({
+            'type':'normal',
+            'title':'come on baby',
+            'onclick':sina.send,
+            'contexts':['all']
+    },null);
+  };
+
+  
+
+
 
 function init() {
-        var version = "1.0.0";
+        oneKey.setContextMenu(); 
+  
+        var version = oneKey.info.version.toString();
+        <!--var version = '1.0.0';-->
 
         // set icon
         var icon = localStorage["icon"];
         if(icon == undefined){
-                icon = "icon.png";
+                icon = oneKey.info.icon.name;
                 localStorage["icon"] = icon;
         }
 
         // set size
         var size = localStorage["icon-size"];
         if(size == undefined){
-                size = "24";
+                size = oneKey.info.icon.size;
                 localStorage["icon-size"] = size;
         }
         chrome.browserAction.setIcon({"path":localStorage["icon"]});
@@ -146,7 +146,6 @@ function init() {
 function updateServiceDetails() {
         localStorage.setItem("kaixin_url", "https://www.kaixin001.com");
         localStorage.setItem("kaixin_tooltip", "开心001是国内最大的sns社区！");
-
 
         localStorage.setItem("sina_url", "https://www.t.sina.com");
         localStorage.setItem("sina_tooltip", "细浪围脖是国内最大的sns社区！");
