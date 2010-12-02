@@ -54,7 +54,6 @@ sina.send = function(data, tab) {
         var title = tab.title || '';
         var pUrl = tab.url || '';
 
-        < ! --alert('type:' + type); -- > < ! --alert('pageUrl:' + pageUrl); -- > < ! --alert('srcUrl:' + srcUrl); -- > < ! --alert('text:' + text); -- > < ! --alert('title:' + title); -- > < ! --alert('pUrl:' + pUrl); -- >
 
         //未选择图片或者未选择文字，则默认为发送页面
         if (!type & ! text) {
