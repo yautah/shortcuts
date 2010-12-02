@@ -1,4 +1,3 @@
-var filterTooltip;
 var showVertical;
 var showSettings;
 var showLabel;
@@ -40,7 +39,6 @@ function init() {
   //document.getElementById("services-number").innerHTML = completeListArrayLength + " ";
   //document.getElementById("servicesFilter").value = "";
 
-  filterTooltip = document.getElementById("filter-tooltip");
   showSettings = document.getElementById("show-settings");
   showLabel = document.getElementById("show-label");
   labelUnder = document.getElementById("label-under");
@@ -512,7 +510,6 @@ function moveVertical(myItem, direction) {
 function reset() {
   showSettings.checked = true;
   showLabel.checked = false;
-  filterTooltip.checked = false;
 
   showVertical.checked = false;
   iconBreak.value = "";
