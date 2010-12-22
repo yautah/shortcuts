@@ -384,6 +384,7 @@ ChromeExOAuth.prototype.setToken = function(token) {
  * @return {String} The stored token.
  */
 ChromeExOAuth.prototype.getToken = function() {
+	alert(this.key_token + "|" + encodeURI(this.oauth_scope));
 	return localStorage[this.key_token + encodeURI(this.oauth_scope)];
 };
 
